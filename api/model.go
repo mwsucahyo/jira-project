@@ -63,6 +63,7 @@ type Fields struct {
 	Summary           string    `json:"summary"`
 	Subtasks          []Subtask `json:"subtasks"`
 	Customfield_10016 float32   `json:"customfield_10016"`
+	Customfield_10024 float32   `json:"customfield_10024"`
 }
 
 type Subtask struct {
@@ -113,4 +114,15 @@ type IssueType struct {
 	AvatarID       int    `json:"avatarId"`
 	EntityID       string `json:"entityId"`
 	HierarchyLevel int    `json:"hierarchyLevel"`
+}
+
+type IssueTask struct {
+	Summary     string  `json:"summary"`
+	JiraLink    string  `json:"jiraLink"`
+	StoryPoints float32 `json:"storyPoints"`
+}
+
+type ResponseIssue struct {
+	StoryPointsTotal float32
+	Issues           []IssueTask `json:"issues"`
 }

@@ -100,7 +100,7 @@ func getBoardByOriginBoardID(config Config, originBoardID int) (*Board, error) {
 }
 
 func getTaskAdditional(config Config, sprintID int, assignee string) (*JQLResponse, error) {
-	taskTypes := []string{"Task", "Sub-task", "Subtask"}
+	taskTypes := []string{"Sub-task", "Subtask"}
 	sprint, err := getSprintByID(config, sprintID)
 	if err != nil {
 		return nil, err
@@ -144,7 +144,7 @@ func getTaskAdditional(config Config, sprintID int, assignee string) (*JQLRespon
 	encodedJQL := url.QueryEscape(jql)
 
 	// Build URL using fmt.Sprintf
-	url := fmt.Sprintf("%s/rest/api/3/search?jql=%s&fields=key,summary,customfield_10016,subtasks", config.JiraURL, encodedJQL)
+	url := fmt.Sprintf("%s/rest/api/3/search?jql=%s&fields=key,summary,customfield_10016,customfield_10024,subtasks", config.JiraURL, encodedJQL)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

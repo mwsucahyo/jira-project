@@ -71,38 +71,25 @@ func GetTaskAdditional(w http.ResponseWriter, r *http.Request, config Config, sp
 		return
 	}
 
-	type IssueSubtask struct {
-		Summary  string `json:"summary"`
-		JiraLink string `json:"jiraLink"`
-	}
-	type Issue struct {
-		Summary     string         `json:"summary"`
-		JiraLink    string         `json:"jiraLink"`
-		StoryPoints float32        `json:"storyPoints"`
-		Subtasks    []IssueSubtask `json:"subtasks"`
-	}
-
-	issues := []Issue{}
+	responseIssues := ResponseIssue{}
+	issues := []IssueTask{}
 
 	for _, issue := range tasks.Issues {
 		jiraLink := fmt.Sprintf("%s/browse/%s", config.JiraURL, issue.Key)
-		issueSubtask := []IssueSubtask{}
-		for _, subtask := range issue.Fields.Subtasks {
-			issueSubtask = append(issueSubtask, IssueSubtask{
-				Summary:  subtask.Fields.Summary,
-				JiraLink: fmt.Sprintf("%s/browse/%s", config.JiraURL, subtask.Key),
-			})
-		}
-		issues = append(issues, Issue{
+		storyPoints := issue.Fields.Customfield_10016 + issue.Fields.Customfield_10024
+		issues = append(issues, IssueTask{
 			Summary:     issue.Fields.Summary,
 			JiraLink:    jiraLink,
-			StoryPoints: issue.Fields.Customfield_10016,
-			Subtasks:    issueSubtask,
+			StoryPoints: storyPoints,
 		})
+
+		responseIssues.StoryPointsTotal += storyPoints
 	}
 
+	responseIssues.Issues = issues
+
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(issues)
+	err = json.NewEncoder(w).Encode(responseIssues)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to encode response: %v", err), http.StatusInternalServerError)
 	}
